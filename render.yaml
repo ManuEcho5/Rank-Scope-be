@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: keyword-rank-api
+    rootDir: backend
+    env: node
+    plan: free
+    buildCommand: |
+      echo "Installing deps (including dev)" && npm install --production=false \
+      && echo "Building TypeScript" && npm run build \
+      && echo "Build contents:" && ls -R dist || echo "dist missing"
+    startCommand: node dist/index.js
+    autoDeploy: true
+    envVars:
+      # Do NOT force NODE_ENV=production during build so dev deps (typescript) are present.
+      # Set SERPAPI_KEY in Render dashboard (required for operation)
+      - key: SERPAPI_KEY
+        sync: false
