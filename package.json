@@ -7,22 +7,22 @@
   },
   "main": "dist/index.js",
   "scripts": {
-  "build": "rimraf dist && tsc && echo Build complete",
+    "build": "rimraf dist && tsc && echo Build complete",
     "start": "node dist/index.js",
     "dev": "ts-node-dev --esm --respawn --transpile-only src/index.ts"
   },
   "dependencies": {
-    "cors": "^2.8.5",
-    "express": "^4.19.2",
     "axios": "^1.7.2",
-    "dotenv": "^16.4.5"
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
-    "@types/node": "^20.11.30",
+    "@types/node": "^20.19.13",
+    "rimraf": "^5.0.5",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^5.4.2",
-    "rimraf": "^5.0.5"
+    "typescript": "^5.4.2"
   }
 }

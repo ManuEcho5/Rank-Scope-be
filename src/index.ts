@@ -13,7 +13,7 @@ app.use(express.json());
 
 // Inline /api/check-rank route (removed separate routes module due to stale build issues)
 app.get('/api/check-rank', async (req: express.Request, res: express.Response) => {
-  const { keyword, domain } = req.query as { keyword?: string; domain?: string };
+  const { keyword, domain, gl, location, location_id } = req.query as { keyword?: string; domain?: string; gl?: string; location?: string; location_id?: string };
   if (!keyword || !domain) {
     return res.status(400).json({ error: 'keyword and domain query params are required' });
   }
@@ -27,6 +27,10 @@ app.get('/api/check-rank', async (req: express.Request, res: express.Response) =
       api_key: process.env.SERPAPI_KEY!,
       num: '100'
     });
+    // Optional location targeting
+    if (gl) params.set('gl', gl.toLowerCase()); // country code
+    if (location) params.set('location', location);
+    if (location_id) params.set('location_id', location_id);
     const url = `https://serpapi.com/search?${params.toString()}`;
     const r = await axios.get(url, { timeout: 15000 });
     const organic: any[] = r.data.organic_results || [];
@@ -34,12 +38,12 @@ app.get('/api/check-rank', async (req: express.Request, res: express.Response) =
     const match = organic.find(o => o.link && o.link.toLowerCase().includes(lowerDomain));
     let result: RankResult;
     if (!match) {
-      result = { keyword, domain, page: null, position: null, absoluteRank: null, source: 'serpapi', stable: false };
+      result = { keyword, domain, page: null, position: null, absoluteRank: null, source: 'serpapi', stable: false, gl, location, locationId: location_id };
     } else {
       const absoluteRank = match.position;
       const page = Math.floor((absoluteRank - 1) / 10) + 1;
       const position = ((absoluteRank - 1) % 10) + 1;
-      result = { keyword, domain, page, position, absoluteRank, source: 'serpapi', stable: false, rawTitle: match.title, rawUrl: match.link };
+      result = { keyword, domain, page, position, absoluteRank, source: 'serpapi', stable: false, rawTitle: match.title, rawUrl: match.link, gl, location, locationId: location_id };
     }
     return res.json(result);
   } catch (err: any) {
