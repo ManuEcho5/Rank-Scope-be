@@ -64,3 +64,17 @@ app.get('/api/health', (_req: express.Request, res: express.Response) => {
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });
+
+// Optional lightweight self-ping (fallback if external uptime monitor not used)
+// Set SELF_PING_URL to this service's public /api/health URL. External services like UptimeRobot are preferred.
+const selfPingUrl = process.env.SELF_PING_URL;
+if (selfPingUrl) {
+  const intervalMinutes = Number(process.env.SELF_PING_INTERVAL_MIN || 5);
+  const intervalMs = intervalMinutes * 60 * 1000;
+  console.log(`Self-ping enabled -> ${selfPingUrl} every ${intervalMinutes}m (exact)`);
+  setInterval(() => {
+    axios.get(selfPingUrl, { timeout: 5000 })
+      .then(() => console.log('Self-ping ok'))
+      .catch((err: unknown) => console.warn('Self-ping failed:', (err as any)?.message || err));
+  }, intervalMs);
+}
