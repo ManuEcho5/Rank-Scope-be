@@ -52,6 +52,11 @@ app.get('/', (_req: express.Request, res: express.Response) => {
   res.send('Keyword Rank Checker API');
 });
 
+// Lightweight health endpoint for uptime checks
+app.get('/api/health', (_req: express.Request, res: express.Response) => {
+  res.json({ status: 'ok', uptime: process.uptime() });
+});
+
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });
