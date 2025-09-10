@@ -1,9 +1,28 @@
 import { Router, Request, Response } from 'express';
 import { fetchGoogleRank } from '../services/googleRankService.js';
+import { fetchSerpApiUsage } from '../services/serpApiUsageService.js';
+
+
 // Route version marker to bust stale build caches
 export const __ROUTE_VERSION = 'serpapi-only-v2';
 
+
 const router = Router();
+
+// Endpoint to get SERP API usage/quota
+router.get('/serpapi-usage', async (req: Request, res: Response) => {
+  const apiKey = process.env.SERPAPI_KEY;
+  if (!apiKey) {
+    return res.status(500).json({ error: 'SERPAPI_KEY not configured on server' });
+  }
+  try {
+    const usage = await fetchSerpApiUsage(apiKey);
+    return res.json(usage);
+  } catch (err: any) {
+    console.error('SerpAPI usage error:', err?.message || err);
+    return res.status(500).json({ error: 'Failed to fetch SerpAPI usage' });
+  }
+});
 
 router.get('/check-rank', (req: Request, res: Response) => {
   const { keyword, domain } = req.query as { keyword?: string; domain?: string };
