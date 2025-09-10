@@ -3,16 +3,13 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import axios from 'axios';
 import { RankResult } from './services/rankService.js';
-import rankRoutes from './routes/rankRoutes.js';
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 4000;
 
 app.use(cors());
-
 app.use(express.json());
-app.use('/api', rankRoutes);
 
 // Inline /api/check-rank route (removed separate routes module due to stale build issues)
 app.get('/api/check-rank', async (req: express.Request, res: express.Response) => {
